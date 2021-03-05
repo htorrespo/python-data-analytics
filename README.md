@@ -465,3 +465,33 @@ dtype: float64
 2   NaN
 dtype: float64
 ```
+
+### Series as Dictionaries
+
+An alternative way to think of a series is to think of it as an object dict (dictionary). This similarity is also exploited during the definition of an object series. In fact, you can create a series from a previously defined dict.
+
+```
+>>> mydict = {'red': 2000, 'blue': 1000, 'yellow': 500,
+ 'orange': 1000}
+>>> myseries = pd.Series(mydict)
+>>> myseries
+red       2000
+blue      1000
+yellow     500
+orange    1000
+dtype: int64
+```
+
+As you can see from this example, the array of the index is filled with the keys while the data are filled with the corresponding values. You can also define the array indexes separately. In this case, controlling correspondence between the keys of the dict and labels array of indexes will run. If there is a mismatch, pandas will add the NaN value.
+
+```
+>>> colors = ['red','yellow','orange','blue','green']
+>>> myseries = pd.Series(mydict, index=colors)
+>>> myseries
+red       2000.0
+yellow     500.0
+orange    1000.0
+blue      1000.0
+green      NaN
+dtype: float64
+```
