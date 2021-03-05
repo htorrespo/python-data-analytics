@@ -264,3 +264,156 @@ b   -4
 c    7
 dtype: int64
 ```
+
+### Assigning Values to the Elements
+
+Now that you understand how to select individual elements, you also know how to assign new values to them. In fact, you can select the value by index or by label.
+```
+>>> s[1] = 0
+>>> s
+a    12
+b     0
+c     7
+d     9
+dtype: int64
+>>> s['b'] = 1
+>>> s
+a    12
+b     1
+c     7
+d     9
+dtype: int64
+```
+
+### Defining a Series from NumPy Arrays and Other Series
+
+You can define a new series starting with NumPy arrays or with an existing series .
+
+```
+>>> arr = np.array([1,2,3,4])
+>>> s3 = pd.Series(arr)
+>>> s3
+0    1
+1    2
+2    3
+3    4
+dtype: int64
+>>> s4 = pd.Series(s)
+>>> s4
+a    12
+b     4
+c     7
+d     9
+dtype: int64
+```
+
+Always keep in mind that the values contained in the NumPy array or in the original series are not copied, but are passed by reference. That is, the object is inserted dynamically within the new series object. If it changes, for example its internal element varies in value, then those changes will also be present in the new series object.
+
+```
+>>> s3
+0    1
+1    2
+2    3
+3    4
+dtype: int64
+>>> arr[2] = -2
+>>> s3
+0    1
+1    2
+2   -2
+3    4
+dtype: int64
+```
+
+As you can see in this example, by changing the third element of the arr array, we also modified the corresponding element in the s3 series.
+
+### Filtering Values
+
+Thanks to the choice of the NumPy library as the base of the pandas library and, as a result, for its data structures, many operations that are applicable to NumPy arrays are extended to the series. One of these is filtering values contained in the data structure through conditions.
+
+For example, if you need to know which elements in the series are greater than 8, you write the following:
+
+```
+>>> s[s > 8]
+a    12
+d     9
+dtype: int64
+```
+
+### Operations and Mathematical Functions
+
+Other operations such as operators (+, -, *, and /) and mathematical functions that are applicable to NumPy array can be extended to series.
+
+You can simply write the arithmetic expression for the operators.
+
+```
+>>> s / 2
+a    6.0
+b   -2.0
+c    3.5
+d    4.5
+dtype: float64
+```
+
+However, with the NumPy mathematical functions, you must specify the function referenced with np and the instance of the series passed as an argument.
+```
+>>> np.log(s)
+a    2.484907
+b    0.000000
+c    1.945910
+d    2.197225
+dtype: float64
+```
+
+### Evaluating Vales
+
+There are often duplicate values in a series. Then you may need to have more information about the samples, including existence of any duplicates and whether a certain value is present in the series.
+
+In this regard, you can declare a series in which there are many duplicate values.
+
+```
+>>> serd = pd.Series([1,0,2,1,2,3], index=['white','white','blue','green','green','yellow'])
+>>> serd
+white     1
+white     0
+blue      2
+green     1
+green     2
+yellow    3
+dtype: int64
+```
+
+To know all the values contained in the series, excluding duplicates, you can use the unique() function. The return value is an array containing the unique values in the series, although not necessarily in order.
+
+```
+>>> serd.unique()
+array([1, 0, 2, 3], dtype=int64)
+```
+
+A function that’s similar to unique() is value_counts(), which not only returns unique values but also calculates the occurrences within a series.
+
+```
+>>> serd.value_counts()
+2    2
+1    2
+3    1
+0    1
+dtype: int64
+```
+
+Finally, isin() evaluates the membership, that is, the given a list of values. This function tells you if the values are contained in the data structure. Boolean values that are returned can be very useful when filtering data in a series or in a column of a dataframe.
+
+```
+>>> serd.isin([0,3])
+white     False
+white      True
+blue      False
+green     False
+green     False
+yellow     True
+dtype: bool
+>>> serd[serd.isin([0,3])]
+white     0
+yellow    3
+dtype: int64
+```
