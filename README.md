@@ -365,7 +365,7 @@ d    2.197225
 dtype: float64
 ```
 
-### Evaluating Vales
+### Evaluating Values
 
 There are often duplicate values in a series. Then you may need to have more information about the samples, including existence of any duplicates and whether a certain value is present in the series.
 
