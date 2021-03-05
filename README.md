@@ -519,3 +519,72 @@ dtype: float64
 
 You get a new object series in which only the items with the same label are added. All other labels present in one of the two series are still added to the result but have a NaN value.
 
+### The DataFrame
+
+The dataframe is a tabular data structure very similar to a spreadsheet. This data structure is designed to extend series to multiple dimensions. In fact, the dataframe consists of an ordered collection of columns (see Figure 4-2), each of which can contain a value of a different type (numeric, string, Boolean, etc.).
+
+Unlike series, which have an index array containing labels associated with each element, the dataframe has two index arrays. The first index array, associated with the lines, has very similar functions to the index array in series. In fact, each label is associated with all the values in the row. The second array contains a series of labels, each associated with a particular column.
+
+A dataframe may also be understood as a dict of series, where the keys are the column names and the values are the series that will form the columns of the dataframe. Furthermore, all elements in each series are mapped according to an array of labels, called the index.
+
+### Defining a Dataframe
+
+The most common way to create a new dataframe is precisely to pass a dict object to the DataFrame() constructor. This dict object contains a key for each column that you want to define, with an array of values for each of them.
+
+```
+>>> data = {'color' : ['blue','green','yellow','red','white'],
+                     'object' : ['ball','pen','pencil','paper','mug'],
+                     'price' : [1.2,1.0,0.6,0.9,1.7]}
+>>> frame = pd.DataFrame(data)
+>>> frame
+    color  object price
+0    blue    ball   1.2
+1   green     pen   1.0
+2  yellow  pencil   0.6
+3     red   paper   0.9
+4   white     mug   1.7
+```
+
+If the dict object from which you want to create a dataframe contains more data than you are interested in, you can make a selection. In the constructor of the dataframe, you can specify a sequence of columns using the columns option. The columns will be created in the order of the sequence regardless of how they are contained in the dict object.
+
+
+```
+>>> frame2 = pd.DataFrame(data, columns=['object','price'])
+>>> frame2
+   object price
+0    ball   1.2
+1     pen   1.0
+2  pencil   0.6
+3   paper   0.9
+4     mug   1.7
+```
+
+Even for dataframe objects, if the labels are not explicitly specified in the Index array, pandas automatically assigns a numeric sequence starting from 0. Instead, if you want to assign labels to the indexes of a dataframe, you have to use the index option and assign it an array containing the labels.
+
+```
+>>> frame2 = pd.DataFrame(data, index=['one','two','three','four','five'])
+>>> frame2
+        color  object  price
+one      blue    ball    1.2
+two     green     pen    1.0
+three  yellow  pencil    0.6
+four      red   paper    0.9
+five    white     mug    1.7
+```
+
+Now that we have introduced the two new options called index and columns, it is easy to imagine an alternative way to define a dataframe. Instead of using a dict object, you can define three arguments in the constructor, in the following order—a data matrix, an array containing the labels assigned to the index option, and an array containing the names of the columns assigned to the columns option.
+
+In many examples, as you will see from now on in this book, to create a matrix of values quickly and easily, you can use np.arange(16).reshape((4,4)), which generates a 4x4 matrix of numbers increasing from 0 to 15.
+
+```
+>>> frame3 = pd.DataFrame(np.arange(16).reshape((4,4)),
+...                   index=['red','blue','yellow','white'],
+...                   columns=['ball','pen','pencil','paper'])
+>>> frame3
+        ball  pen  pencil  paper
+red        0    1       2      3
+blue       4    5       6      7
+yellow     8    9      10     11
+white     12   13      14     15
+```
+
