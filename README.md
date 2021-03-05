@@ -62,7 +62,7 @@ Press the y key on your keyboard to continue the installation.
 Preparing transaction: done
 Verifying transaction: done
 Executing transaction: done
-
+```
 
 If you want to upgrade your package to a newer version, the command to do so is very simple and intuitive:
 
