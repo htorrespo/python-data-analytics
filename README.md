@@ -128,4 +128,63 @@ When choosing the module, be careful to choose the correct version for your vers
 
 The disadvantage of this approach is that you need to install the packages individually without a package manager that can help manage versioning and interdependencies between the various packages. The advantage is greater mastery of the modules and their versions, so you have the most current modules possible without depending on the choices of the distributions.
 
+## Testing Your pandas Installation
 
+The pandas library can run a check after it’s installed to verify the internal controls (the official documentation states that the test provides a 97% coverage of all the code inside).
+
+First, make sure you have installed the nose module in your Python distribution (see the “Nose Module” sidebar). If you did, you can start the test by entering the following command:
+
+```
+nosetests pandas
+```
+
+The test will take several minutes and in the end it will show a list of any problems encountered.
+
+### Nose Module
+
+This module is designed for testing Python code during the development phases of a project or a Python module in particular. This module extends the capabilities of the unittest module. The Python module involved in testing the code, however, making its coding much simpler and easier.
+
+I suggest you read this article at http://pythontesting.net/framework/nose/nose-introduction/ for more information.
+
+
+## Getting Started with pandas
+
+The best way to get started with pandas is to open a Python shell and type commands one by one. This way, you have the opportunity to become familiar with the individual functions and data structures that are explained in this chapter.
+
+Furthermore, the data and functions defined in the various examples remain valid throughout the chapter, which means you don’t have to to define them each time. You are invited, at the end of each example, to repeat the various commands, modify them if appropriate, and control how the values in the data structures vary during operation. This approach is great for getting familiar with the different topics covered in this chapter, leaving you the opportunity to interact freely with what you are reading.
+
+Note
+
+This chapter assumes that you have some familiarity with Python and NumPy in general. If you have any difficulty, read Chapters  2 and  3 of this book.
+
+First, open a session on the Python shell and then import the pandas library. The general practice for importing the pandas module is as follows:
+
+```
+>>> import pandas as pd
+>>> import numpy as np
+```
+
+Thus, in this chapter and throughout the book, every time you see pd and np, you’ll make reference to an object or method referring to these two libraries, even though you will often be tempted to import the pandas module in this way:
+
+```
+>>> from pandas import *
+```
+
+Thus, you no longer have to reference a function, object, or method with pd; this approach is not considered good practice by the Python community in general.
+
+## Introduction to pandas Data Structures
+
+The heart of pandas is the two primary data structures on which all transactions, which are generally made during the analysis of data, are centralized:
+
+- Series
+- Dataframes
+
+The series, as you will see, constitutes the data structure designed to accommodate a sequence of one-dimensional data, while the dataframe, a more complex data structure, is designed to contain cases with several dimensions.
+
+Although these data structures are not the universal solution to all problems, they do provide a valid and robust tool for most applications. In fact, they remain very simple to understand and use. In addition, many cases of more complex data structures can still be traced to these simple two cases.
+
+However, their peculiarities are based on a particular feature—integration in their structure of index objects and labels. You will see that this feature causes these data structures to be easily manipulated.
+
+### The Series
+
+The series is the object of the pandas library designed to represent one-dimensional data structures, similar to an array but with some additional features. Its internal structure is simple (see Figure 4-1) and is composed of two arrays associated with each other. The main array holds the data (data of any NumPy type) to which each element is associated with a label, contained within the other array, called the index.
