@@ -495,3 +495,27 @@ blue      1000.0
 green      NaN
 dtype: float64
 ```
+
+### Operations Between Series
+
+We have seen how to perform arithmetic operations between series and scalar values. The same thing is possible by performing operations between two series, but in this case even the labels come into play.
+
+In fact, one of the great potentials of this type of data structures is that series can align data addressed differently between them by identifying their corresponding labels.
+
+In the following example, you add two series having only some elements in common with the label.
+
+```
+>>> mydict2 = {'red':400,'yellow':1000,'black':700}
+>>> myseries2 = pd.Series(mydict2)
+>>> myseries + myseries2
+black      NaN
+blue       NaN
+green      NaN
+orange     NaN
+red       2400.0
+yellow    1500.0
+dtype: float64
+```
+
+You get a new object series in which only the items with the same label are added. All other labels present in one of the two series are still added to the result but have a NaN value.
+
