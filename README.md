@@ -188,3 +188,44 @@ However, their peculiarities are based on a particular feature—integration in 
 ### The Series
 
 The series is the object of the pandas library designed to represent one-dimensional data structures, similar to an array but with some additional features. Its internal structure is simple (see Figure 4-1) and is composed of two arrays associated with each other. The main array holds the data (data of any NumPy type) to which each element is associated with a label, contained within the other array, called the index.
+
+### Declaring a Series
+
+To create the series specified in Figure 4-1, you simply call the Series() constructor and pass as an argument an array containing the values to be included in it.
+
+```
+>>> s = pd.Series([12,-4,7,9])
+>>> s
+0    12
+1    -4
+2     7
+3     9
+dtype: int64
+```
+
+As you can see from the output of the series, on the left there are the values in the index, which is a series of labels, and on the right are the corresponding values.
+
+If you do not specify any index during the definition of the series, by default, pandas will assign numerical values increasing from 0 as labels. In this case, the labels correspond to the indexes (position in the array) of the elements in the series object.
+
+Often, however, it is preferable to create a series using meaningful labels in order to distinguish and identify each item regardless of the order in which they were inserted into the series.
+
+In this case it will be necessary, during the constructor call, to include the index option and assign an array of strings containing the labels.
+
+```
+>>> s = pd.Series([12,-4,7,9], index=['a','b','c','d'])
+>>> s
+a    12
+b    -4
+c     7
+d     9
+dtype: int64
+```
+
+If you want to individually see the two arrays that make up this data structure, you can call the two attributes of the series as follows: index and values.
+
+```
+>>> s.values
+array([12, -4,  7,  9], dtype=int64)
+>>> s.index
+Index([u'a', u'b', u'c', u'd'], dtype="object")
+```
