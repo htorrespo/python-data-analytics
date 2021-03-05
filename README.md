@@ -417,3 +417,51 @@ white     0
 yellow    3
 dtype: int64
 ```
+
+### NaN Values
+
+As you can see in the previous case, we tried to run the logarithm of a negative number and received NaN as a result. This specific value NaN (Not a Number) is used in pandas data structures to indicate the presence of an empty field or something that’s not definable numerically.
+
+Generally, these NaN values are a problem and must be managed in some way, especially during data analysis. These data are often generated when extracting data from a questionable source or when the source is missing data. Furthermore, as you have just seen, the NaN values can also be generated in special cases, such as calculations of logarithms of negative values, or exceptions during execution of some calculation or function. In later chapters, you see how to apply different strategies to address the problem of NaN values.
+
+Despite their problematic nature, however, pandas allows you to explicitly define NaNs and add them to a data structure, such as a series. Within the array containing the values, you enter np.NaN wherever you want to define a missing value.
+
+```
+>>> s2 = pd.Series([5,-3,np.NaN,14])
+>>> s2
+0     5.0
+1    -3.0
+2   NaN
+3    14.0
+dtype: float64
+```
+
+The isnull() and notnull() functions are very useful to identify the indexes without a value.
+
+```
+>>> s2.isnull()
+0    False
+1    False
+2     True
+3    False
+dtype: bool
+>>> s2.notnull()
+0     True
+1     True
+2    False
+3     True
+dtype: bool
+```
+
+In fact, these functions return two series with Boolean values that contain the True and False values, depending on whether the item is a NaN value or less. The isnull() function returns True at NaN values in the series; inversely, the notnull() function returns True if they are not NaN. These functions are often placed inside filters to make a condition.
+
+```
+>>> s2[s2.notnull()]
+0     5.0
+1    -3.0
+3    14.0
+dtype: float64
+>>> s2[s2.isnull()]
+2   NaN
+dtype: float64
+```
