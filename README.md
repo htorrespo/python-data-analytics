@@ -229,3 +229,38 @@ array([12, -4,  7,  9], dtype=int64)
 >>> s.index
 Index([u'a', u'b', u'c', u'd'], dtype="object")
 ```
+
+### Selecting the Internal Elements
+
+
+You can select individual elements as ordinary numpy arrays, specifying the key.
+
+```
+>>> s[2]
+7
+```
+
+Or you can specify the label corresponding to the position of the index.
+
+```
+>>> s['b']
+-4
+```
+
+In the same way you select multiple items in a numpy array, you can specify the following:
+
+```
+>>> s[0:2]
+a    12
+b    -4
+dtype: int64
+```
+
+In this case, you can use the corresponding labels, but specify the list of labels in an array.
+
+```
+>>> s[['b','c']]
+b   -4
+c    7
+dtype: int64
+```
