@@ -788,3 +788,60 @@ You get a dataframe containing Boolean values, where True indicates values that 
 4   NaN    NaN    NaN  NaN
 ```
 
+### Deleting a Column
+
+If you want to delete an entire column and all its contents, use the del command.
+
+```
+>>> del frame['new']
+>>> frame
+   colors  object price
+0    blue    ball   1.2
+1   green     pen   1.0
+2  yellow  pencil   3.3
+3     red   paper   0.9
+4   white     mug   1.7
+```
+
+### Filtering
+
+Even when a dataframe, you can apply the filtering through the application of certain conditions. For example, say you want to get all values smaller than a certain number, for example 1.2.
+
+```
+>>> frame[frame < 1.2]
+>>> frame
+   colors  object price
+0    blue    ball   NaN
+1   green     pen   1.0
+2  yellow  pencil   NaN
+3     red   paper   0.9
+4   white     mug   NaN
+```
+
+You will get a dataframe containing values less than 1.2, keeping their original position. All others will be replaced with NaN.
+
+### DataFrame from Nested dict
+
+A very common data structure used in Python is a nested dict , as follows:
+
+```
+nestdict = { 'red': { 2012: 22, 2013: 33 },
+                     'white': { 2011: 13, 2012: 22, 2013: 16},
+                     'blue': {2011: 17, 2012: 27, 2013: 18}}
+```
+
+This data structure, when it is passed directly as an argument to the DataFrame() constructor, will be interpreted by pandas to treat external keys as column names and internal keys as labels for the indexes.
+
+During the interpretation of the nested structure, it is possible that not all fields will find a successful match. pandas compensates for this inconsistency by adding the NaN value to missing values.
+
+```
+>>> nestdict = {'red':{2012: 22, 2013: 33},
+...             'white':{2011: 13, 2012: 22, 2013: 16},
+...             'blue': {2011: 17, 2012: 27, 2013: 18}}
+>>> frame2 = pd.DataFrame(nestdict)
+>>> frame2
+      blue    red  white
+2011    17    NaN     13
+2012    27   22.0     22
+2013    18   33.0     16
+```
