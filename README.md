@@ -761,3 +761,30 @@ Finally, to change a single value, you simply select the item and give it the ne
 ```
 >>> frame['price'][2] = 3.3
 ```
+
+### Membership of a Value
+
+You have already seen the isin() function applied to the series to determine the membership of a set of values. Well, this feature is also applicable to dataframe objects.
+
+```
+>>> frame.isin([1.0,'pen'])
+   color object  price  new
+0  False  False  False  False
+1  False   True   True  True
+2  False  False  False  False
+3  False  False  False  False
+4  False  False  False  False
+```
+
+You get a dataframe containing Boolean values, where True indicates values that meet the membership. If you pass the value returned as a condition, then you’ll get a new dataframe containing only the values that satisfy the condition.
+
+```
+>>> frame[frame.isin([1.0,'pen'])]
+  color object  price  new
+0   NaN    NaN    NaN  NaN
+1   NaN    pen    1.0  1.0
+2   NaN    NaN    NaN  NaN
+3   NaN    NaN    NaN  NaN
+4   NaN    NaN    NaN  NaN
+```
+
