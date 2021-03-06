@@ -588,3 +588,99 @@ yellow     8    9      10     11
 white     12   13      14     15
 ```
 
+### Selecting Elements
+
+If you want to know the name of all the columns of a dataframe, you can is specify the columns attribute on the instance of the dataframe object.
+
+```
+>>> frame.columns
+Index(['colors', 'object', 'price'], dtype="object")
+```
+
+Similarly, to get the list of indexes, you should specify the index attribute.
+
+```
+>>> frame.index
+RangeIndex(start=0, stop=5, step=1)
+```
+
+You can also get the entire set of data contained within the data structure using the values attribute.
+
+```
+>>> frame.values
+array([['blue', 'ball', 1.2],
+       ['green', 'pen', 1.0],
+       ['yellow', 'pencil', 0.6],
+       ['red', 'paper', 0.9],
+       ['white', 'mug', 1.7]], dtype=object)
+```
+
+Or, if you are interested in selecting only the contents of a column, you can write the name of the column.
+
+```
+>>> frame['price']
+0    1.2
+1    1.0
+2    0.6
+3    0.9
+4    1.7
+Name: price, dtype: float64
+```
+
+As you can see, the return value is a series object. Another way to do this is to use the column name as an attribute of the instance of the dataframe.
+
+```
+>>> frame.price
+0    1.2
+1    1.0
+2    0.6
+3    0.9
+4    1.7
+Name: price, dtype: float64
+```
+
+For rows within a dataframe, it is possible to use the loc attribute with the index value of the row that you want to extract.
+
+```
+>>> frame.loc[2]
+color     yellow
+object    pencil
+price        0.6
+Name: 2, dtype: object
+```
+
+The object returned is again a series in which the names of the columns have become the label of the array index, and the values have become the data of series.
+
+To select multiple rows, you specify an array with the sequence of rows to insert:
+
+```
+>>> frame.loc[[2,4]]
+    color  object  price
+2  yellow  pencil    0.6
+4   white     mug    1.7
+```
+
+If you need to extract a portion of a DataFrame, selecting the lines that you want to extract, you can use the reference numbers of the indexes. In fact, you can consider a row as a portion of a dataframe that has the index of the row as the source (in the next 0) value and the line above the one we want as a second value (in the next one).
+
+```
+>>> frame[0:1]
+  color object  price
+0  blue   ball    1.2
+```
+
+As you can see, the return value is an object dataframe containing a single row. If you want more than one line, you must extend the selection range.
+
+```
+>>> frame[1:3]
+    color  object  price
+1   green     pen    1.0
+2  yellow  pencil    0.6
+```
+
+Finally, if what you want to achieve is a single value within a dataframe, you first use the name of the column and then the index or the label of the row.
+
+```
+>>> frame['object'][3]
+'paper'
+```
+
