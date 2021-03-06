@@ -845,3 +845,15 @@ During the interpretation of the nested structure, it is possible that not all f
 2012    27   22.0     22
 2013    18   33.0     16
 ```
+
+### Transposition of a Dataframe
+
+An operation that you might need when you’re dealing with tabular data structures is transposition (that is, columns become rows and rows become columns). pandas allows you to do this in a very simple way. You can get the transposition of the dataframe by adding the T attribute to its application.
+
+```
+>>> frame2.T
+       2011  2012  2013
+blue   17.0  27.0  18.0
+red     NaN  22.0  33.0
+white  13.0  22.0  16.0
+```
