@@ -684,3 +684,80 @@ Finally, if what you want to achieve is a single value within a dataframe, you f
 'paper'
 ```
 
+### Assigning Values
+
+Once you understand how to access the various elements that make up a dataframe, you follow the same logic to add or change the values in it.
+
+For example, you have already seen that within the dataframe structure, an array of indexes is specified by the index attribute, and the row containing the name of the columns is specified with the columns attribute. Well, you can also assign a label, using the name attribute, to these two substructures to identify them.
+
+```
+>>> frame.index.name = 'id'
+>>> frame.columns.name = 'item'
+>>> frame
+item   color  object  price
+id
+0       blue    ball    1.2
+1      green     pen    1.0
+2     yellow  pencil    0.6
+3        red   paper    0.9
+4      white     mug    1.7
+```
+
+One of the best features of the data structures of pandas is their high flexibility. In fact, you can always intervene at any level to change the internal data structure. For example, a very common operation is to add a new column.
+
+You can do this by simply assigning a value to the instance of the dataframe and specifying a new column name.
+
+```
+>>> frame['new'] = 12
+>>> frame
+   colors  object price  new
+0    blue    ball   1.2   12
+1   green     pen   1.0   12
+2  yellow  pencil   0.6   12
+3     red   paper   0.9   12
+4   white     mug   1.7   12
+```
+
+As you can see from this result, there is a new column called new with the value within 12 replicated for each of its elements.
+
+If, however, you want to update the contents of a column, you have to use an array.
+
+```
+>>> frame['new'] = [3.0,1.3,2.2,0.8,1.1]
+>>> frame
+    color  object  price  new
+0    blue    ball    1.2  3.0
+1   green     pen    1.0  1.3
+2  yellow  pencil    0.6  2.2
+3     red   paper    0.9  0.8
+4   white     mug    1.7  1.1
+```
+
+You can follow a similar approach if you want to update an entire column, for example, by using the np.arange() function to update the values of a column with a predetermined sequence.
+
+The columns of a dataframe can also be created by assigning a series to one of them, for example by specifying a series containing an increasing series of values through the use of np.arange().
+
+```
+>>> ser = pd.Series(np.arange(5))
+>>> ser
+0    0
+1    1
+2    2
+3    3
+4    4
+dtype: int64
+>>> frame['new'] = ser
+>>> frame
+    color  object  price  new
+0    blue    ball    1.2    0
+1   green     pen    1.0    1
+2  yellow  pencil    0.6    2
+3     red   paper    0.9    3
+4   white     mug    1.7    4
+```
+
+Finally, to change a single value, you simply select the item and give it the new value.
+
+```
+>>> frame['price'][2] = 3.3
+```
