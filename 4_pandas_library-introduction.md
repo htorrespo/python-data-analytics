@@ -1568,5 +1568,275 @@ paper    -0.119523
 dtype: float64
 ```
 
+## “Not a Number” Data
 
+In the previous sections, you saw how easily missing data can be formed. They are recognizable in the data structures by the NaN (Not a Number) value. So, having values that are not defined in a data structure is quite common in data analysis.
+
+However, pandas is designed to better manage this eventuality. In fact, in this section, you will learn how to treat these values so that many issues can be obviated. For example, in the pandas library, calculating descriptive statistics excludes NaN values implicitly.
+
+### Assigning a NaN Value
+
+If you need to specifically assign a NaN value to an element in a data structure, you can use the np.NaN (or np.nan) value of the NumPy library.
+
+```
+>>> ser = pd.Series([0,1,2,np.NaN,9],
+...                   index=['red','blue','yellow','white','green'])
+>>> ser
+red      0.0
+blue     1.0
+yellow   2.0
+white    NaN
+green    9.0
+dtype: float64
+>>> ser['white'] = None
+>>> ser
+red      0.0
+blue     1.0
+yellow   2.0
+white    NaN
+green    9.0
+dtype: float64
+```
+
+### Filtering Out NaN Values
+
+There are various ways to eliminate the NaN values during data analysis. Eliminating them by hand, element by element, can be very tedious and risky, and you’re never sure that you eliminated all the NaN values. This is where the dropna() function comes to your aid.
+
+```
+>>> ser.dropna()
+red     0.0
+blue    1.0
+yellow  2.0
+green   9.0
+dtype: float64
+```
+
+You can also directly perform the filtering function by placing notnull() in the selection condition.
+
+```
+>>> ser[ser.notnull()]
+red     0.0
+blue    1.0
+yellow  2.0
+green   9.0
+dtype: float64
+```
+
+If you’re dealing with a dataframe, it gets a little more complex. If you use the dropna() function on this type of object, and there is only one NaN value on a column or row, it will eliminate it.
+
+```
+>>> frame3 = pd.DataFrame([[6,np.nan,6],[np.nan,np.nan,np.nan],[2,np.nan,5]],
+...                        index = ['blue','green','red'],
+...                        columns = ['ball','mug','pen'])
+>>> frame3
+       ball  mug  pen
+blue    6.0  NaN  6.0
+green   NaN  NaN  NaN
+red     2.0  NaN  5.0
+>>> frame3.dropna()
+Empty DataFrame
+Columns: [ball, mug, pen]
+Index: []
+```
+
+Therefore, to avoid having entire rows and columns disappear completely, you should specify the how option, assigning a value of all to it. This tells the dropna() function to delete only the rows or columns in which all elements are NaN.
+
+```
+>>> frame3.dropna(how='all')
+      ball  mug  pen
+blue   6.0  NaN  6.0
+red    2.0  NaN  5.0
+```
+
+### Filling in NaN Occurrences
+
+Rather than filter NaN values within data structures, with the risk of discarding them along with values that could be relevant in the context of data analysis, you can replace them with other numbers. For most purposes, the fillna() function is a great choice. This method takes one argument, the value with which to replace any NaN. It can be the same for all cases.
+
+```
+>>> frame3.fillna(0)
+       ball  mug  pen
+blue    6.0  0.0  6.0
+green   0.0  0.0  0.0
+red     2.0  0.0  5.0
+```
+Or you can replace NaN with different values depending on the column, specifying one by one the indexes and the associated values.
+
+```
+>>> frame3.fillna({'ball':1,'mug':0,'pen':99})
+       ball  mug   pen
+blue    6.0  0.0   6.0
+green   1.0  0.0  99.0
+red     2.0  0.0   5.0
+```
+
+## Hierarchical Indexing and Leveling
+
+Hierarchical indexing is a very important feature of pandas, as it allows you to have multiple levels of indexes on a single axis. It gives you a way to work with data in multiple dimensions while continuing to work in a two-dimensional structure.
+
+Let’s start with a simple example, creating a series containing two arrays of indexes, that is, creating a structure with two levels.
+
+```
+>>> mser = pd.Series(np.random.rand(8),
+...        index=[['white','white','white','blue','blue','red','red',
+           'red'],
+...               ['up','down','right','up','down','up','down','left']])
+>>> mser
+white  up       0.461689
+       down     0.643121
+       right    0.956163
+blue   up       0.728021
+       down     0.813079
+red    up       0.536433
+       down     0.606161
+       left     0.996686
+dtype: float64
+>>> mser.index
+Pd.MultiIndex(levels=[['blue', 'red', 'white'], ['down',
+'left', 'right', 'up']],
+...        labels=[[2, 2, 2, 0, 0, 1, 1, 1],
+           [3, 0, 2, 3, 0, 3, 0, 1]])
+```
+
+Through the specification of hierarchical indexing, selecting subsets of values is in a certain way simplified.
+
+In fact, you can select the values for a given value of the first index, and you do it in the classic way:
+
+```
+>>> mser['white']
+up       0.461689
+down     0.643121
+right    0.956163
+dtype: float64
+```
+
+Or you can select values for a given value of the second index, in the following manner:
+
+```
+>>> mser[:,'up']
+white    0.461689
+blue     0.728021
+red      0.536433
+dtype: float64
+Intuitively, if you want to select a specific value, you specify both indexes.
+
+>>> mser['white','up']
+0.46168915430531676
+```
+
+Hierarchical indexing plays a critical role in reshaping data and group-based operations such as a pivot-table. For example, the data could be rearranged and used in a dataframe with a special function called unstack(). This function converts the series with a hierarchical index to a simple dataframe, where the second set of indexes is converted into a new set of columns.
+
+```
+>>> mser.unstack()
+           down      left     right        up
+blue   0.813079       NaN       NaN  0.728021
+red    0.606161  0.996686       NaN  0.536433
+white  0.643121       NaN  0.956163  0.461689
+```
+
+If what you want is to perform the reverse operation, which is to convert a dataframe to a series, you use the stack() function .
+
+```
+>>> frame
+        ball  pen  pencil  paper
+red        0    1       2      3
+blue       4    5       6      7
+yellow     8    9      10     11
+white     12   13      14     15
+>>> frame.stack()
+red     ball       0
+        pen        1
+        pencil     2
+        paper      3
+blue    ball       4
+        pen        5
+        pencil     6
+        paper      7
+yellow  ball       8
+        pen        9
+        pencil    10
+        paper     11
+white   ball      12
+        pen       13
+        pencil    14
+        paper     15
+dtype: int64
+```
+
+With dataframe, it is possible to define a hierarchical index both for the rows and for the columns. At the time the dataframe is declared, you have to define an array of arrays for the index and columns options.
+
+```
+>>> mframe = pd.DataFrame(np.random.randn(16).reshape(4,4),
+...      index=[['white','white','red','red'], ['up','down','up','down']],
+...      columns=[['pen','pen','paper','paper'],[1,2,1,2]])
+>>> mframe
+                 pen               paper
+                   1         2         1         2
+white up   -1.964055  1.312100 -0.914750 -0.941930
+      down -1.886825  1.700858 -1.060846 -0.197669
+red   up   -1.561761  1.225509 -0.244772  0.345843
+      down  2.668155  0.528971 -1.633708  0.921735
+```
+
+### Reordering and Sorting Levels
+
+Occasionally, you might need to rearrange the order of the levels on an axis or sort for values at a specific level.
+
+The swaplevel() function accepts as arguments the names assigned to the two levels that you want to interchange and returns a new object with the two levels interchanged between them, while leaving the data unmodified.
+
+```
+>>> mframe.columns.names = ['objects','id']
+>>> mframe.index.names = ['colors','status']
+>>> mframe
+objects             pen               paper
+id                    1         2         1         2
+colors status
+white  up     -1.964055  1.312100 -0.914750 -0.941930
+       down   -1.886825  1.700858 -1.060846 -0.197669
+red    up     -1.561761  1.225509 -0.244772  0.345843
+       down    2.668155  0.528971 -1.633708  0.921735
+>>> mframe.swaplevel('colors','status')
+objects             pen               paper
+id                    1         2         1         2
+status colors
+up     white  -1.964055  1.312100 -0.914750 -0.941930
+down   white  -1.886825  1.700858 -1.060846 -0.197669
+up     red    -1.561761  1.225509 -0.244772  0.345843
+down   red     2.668155  0.528971 -1.633708  0.921735
+Instead, the sort_index() function orders the data considering only those of a certain level by specifying it as parameter
+>>> mframe.sort_index(level='colors')
+objects             pen               paper
+id                    1         2         1         2
+colors status
+red    down    2.668155  0.528971 -1.633708  0.921735
+       up     -1.561761  1.225509 -0.244772  0.345843
+white  down   -1.886825  1.700858 -1.060846 -0.197669
+       up     -1.964055  1.312100 -0.914750 -0.941930
+```
+
+### Summary Statistic by Level
+
+Many descriptive statistics and summary statistics performed on a dataframe or on a series have a level option, with which you can determine at what level the descriptive and summary statistics should be determined.
+
+For example, if you create a statistic at row level, you have to simply specify the level option with the level name.
+
+```
+ >>> mframe.sum(level='colors')
+objects       pen               paper
+id              1         2         1         2
+colors
+red      1.106394  1.754480 -1.878480  1.267578
+white   -3.850881  3.012959 -1.975596 -1.139599
+```
+
+If you want to create a statistic for a given level of the column, for example, the id, you must specify the second axis as an argument through the axis option set to 1.
+
+```
+>>> mframe.sum(level='id', axis=1)
+id                    1         2
+colors status
+white  up     -2.878806  0.370170
+       down   -2.947672  1.503189
+red    up     -1.806532  1.571352
+       down    1.034447  1.450706
+```
 
