@@ -1160,6 +1160,7 @@ yellow   19.0 NaN    NaN  19.0    NaN
 ```
 
 ## Operations Between Data Structures
+
 Now that you are familiar with the data structures such as series and dataframe and you have seen how various elementary operations can be performed on them, it’s time to go to operations involving two or more of these structures.
 
 For example, in the previous section, you saw how the arithmetic operators apply between two of these objects. Now in this section you will deepen more the topic of operations that can be performed between two data structures.
@@ -1168,7 +1169,7 @@ For example, in the previous section, you saw how the arithmetic operators apply
 
 You’ve just seen how to use mathematical operators directly on the pandas data structures. The same operations can also be performed using appropriate methods, called flexible arithmetic methods.
 
-= add()
+- add()
 
 - sub()
 
@@ -1244,5 +1245,122 @@ red        0  NaN      0    0       0
 blue       4  NaN      4    4       4
 yellow     8  NaN      8    8       8
 white     12  NaN     12   12      12
+```
+
+## Function Application and Mapping
+
+This section covers the pandas library functions.
+
+### Functions by Element
+
+The pandas library is built on the foundations of NumPy and then extends many of its features by adapting them to new data structures as series and dataframe. Among these are the universal functions, called ufunc. This class of functions operates by element in the data structure.
+
+```
+>>> frame = pd.DataFrame(np.arange(16).reshape((4,4)),
+...                   index=['red','blue','yellow','white'],
+...                   columns=['ball','pen','pencil','paper'])
+>>> frame
+        ball  pen  pencil  paper
+red        0    1       2      3
+blue       4    5       6      7
+yellow     8    9      10     11
+white     12   13      14     15
+For example, you could calculate the square root of each value in the dataframe using the NumPy np.sqrt().
+
+```
+>>> np.sqrt(frame)
+            ball       pen    pencil     paper
+red     0.000000  1.000000  1.414214  1.732051
+blue    2.000000  2.236068  2.449490  2.645751
+yellow  2.828427  3.000000  3.162278  3.316625
+white   3.464102  3.605551  3.741657  3.872983
+```
+
+### Functions by Row or Column
+
+The application of the functions is not limited to the ufunc functions, but also includes those defined by the user. The important point is that they operate on a one-dimensional array, giving a single number as a result. For example, you can define a lambda function that calculates the range covered by the elements in an array.
+
+```
+>>> f = lambda x: x.max() - x.min()
+```
+
+It is possible to define the function this way as well:
+
+```
+>>> def f(x):
+...    return x.max() - x.min()
+...
+```
+
+Using the apply() function, you can apply the function just defined on the dataframe.
+
+```
+>>> frame.apply(f)
+ball      12
+pen       12
+pencil    12
+paper     12
+dtype: int64
+```
+
+The result this time is one value for the column, but if you prefer to apply the function by row instead of by column, you have to set the axis option to 1.
+
+```
+>>> frame.apply(f, axis=1)
+red       3
+blue      3
+yellow    3
+white     3
+dtype: int64
+```
+
+It is not mandatory that the method apply() return a scalar value. It can also return a series. A useful case would be to extend the application to many functions simultaneously. In this case, we will have two or more values for each feature applied. This can be done by defining a function in the following manner:
+
+```
+>>> def f(x):
+...     return pd.Series([x.min(), x.max()], index=['min','max'])
+...
+```
+Then, you apply the function as before. But in this case as an object returned you get a dataframe instead of a series, in which there will be as many rows as the values returned by the function.
+
+```
+>>> frame.apply(f)
+     ball  pen  pencil  paper
+min     0    1       2      3
+max    12   13      14     15
+```
+
+### Statistics Functions
+
+Most of the statistical functions for arrays are still valid for dataframe, so using the apply() function is no longer necessary. For example, functions such as sum() and mean() can calculate the sum and the average, respectively, of the elements contained within a dataframe.
+
+```
+>>> frame.sum()
+ball      24
+pen       28
+pencil    32
+paper     36
+dtype: int64
+>>> frame.mean()
+ball      6.0
+pen       7.0
+pencil    8.0
+paper     9.0
+dtype: float64
+```
+
+There is also a function called describe() that allows you to obtain summary statistics at once.
+
+```
+>>> frame.describe()
+            ball        pen     pencil      paper
+count   4.000000   4.000000   4.000000   4.000000
+mean    6.000000   7.000000   8.000000   9.000000
+std     5.163978   5.163978   5.163978   5.163978
+min     0.000000   1.000000   2.000000   3.000000
+25%     3.000000   4.000000   5.000000   6.000000
+50%     6.000000   7.000000   8.000000   9.000000
+75%     9.000000  10.000000  11.000000  12.000000
+max    12.000000  13.000000  14.000000  15.000000
 ```
 
