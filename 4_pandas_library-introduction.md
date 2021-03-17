@@ -868,3 +868,293 @@ blue   17.0  27.0  18.0
 red     NaN  22.0  33.0
 white  13.0  22.0  16.0
 ```
+## The Index Objects
+
+Now that you know what the series and the dataframe are and how they are structured, you can likely perceive the peculiarities of these data structures. Indeed, the majority of their excellent characteristics are due to the presence of an Index object that’s integrated in these data structures.
+
+The Index objects are responsible for the labels on the axes and other metadata as the name of the axes. You have already seen how an array containing labels is converted into an Index object and that you need to specify the index option in the constructor.
+
+```
+>>> ser = pd.Series([5,0,3,8,4], index=['red','blue','yellow','white','green'])
+>>> ser.index
+Index(['red', 'blue', 'yellow', 'white', 'green'], dtype="object")
+```
+
+Unlike all the other elements in the pandas data structures (series and dataframe), the Index objects are immutable. Once declared, they cannot be changed. This ensures their secure sharing between the various data structures.
+
+Each Index object has a number of methods and properties that are useful when you need to know the values they contain.
+
+### Methods on Index
+
+There are some specific methods for indexes available to get some information about indexes from a data structure. For example, idmin() and idmax() are two functions that return, respectively, the index with the lowest value and the index with the highest value.
+
+```
+>>> ser.idxmin()
+'blue'
+>>> ser.idxmax()
+'white'
+```
+
+### Index with Duplicate Labels
+
+So far, you have met all cases in which indexes within a single data structure have a unique label. Although many functions require this condition to run, this condition is not mandatory on the data structures of pandas.
+
+Define by way of example, a series with some duplicate labels.
+
+```
+>>> serd = pd.Series(range(6), index=['white','white','blue','green','green','yellow'])
+>>> serd
+white     0
+white     1
+blue      2
+green     3
+green     4
+yellow    5
+dtype: int64
+```
+
+Regarding the selection of elements in a data structure, if there are more values in correspondence of the same label, you will get a series in place of a single element.
+
+```
+>>> serd['white']
+white    0
+white    1
+dtype: int64
+```
+
+The same logic applies to the dataframe, with duplicate indexes that will return the dataframe.
+
+With small data structures, it is easy to identify any duplicate indexes, but if the structure becomes gradually larger, this starts to become difficult. In this respect, pandas provides you with the is_unique attribute belonging to the Index objects. This attribute will tell you if there are indexes with duplicate labels inside the structure data (both series and dataframe).
+
+```
+>>> serd.index.is_unique
+False
+>>> frame.index.is_unique
+True
+```
+
+## Other Functionalities on Indexes
+
+Compared to data structures commonly used with Python, you saw that pandas, as well as taking advantage of the high-performance quality offered by NumPy arrays, has chosen to integrate indexes in them.
+
+This choice has proven somewhat successful. In fact, despite the enormous flexibility given by the dynamic structures that already exist, using the internal reference to the structure, such as that offered by the labels, allows developers who must perform operations to carry them out in a simpler and more direct way.
+
+This section analyzes in detail a number of basic features that take advantage of this mechanism.
+
+- Reindexing
+
+- Dropping
+
+- Alignment
+
+### Reindexing
+
+It was previously stated that once it’s declared in a data structure, the Index object cannot be changed. This is true, but by executing a reindexing, you can also overcome this problem.
+
+In fact it is possible to obtain a new data structure from an existing one where indexing rules can be defined again.
+
+```
+>>> ser = pd.Series([2,5,7,4], index=['one','two','three','four'])
+>>> ser
+one      2
+two      5
+three    7
+four     4
+dtype: int64
+```
+
+In order to reindex this series, pandas provides you with the reindex() function. This function creates a new series object with the values of the previous series rearranged according to the new sequence of labels.
+
+During reindexing, it is possible to change the order of the sequence of indexes, delete some of them, or add new ones. In the case of a new label, pandas adds NaN as the corresponding value.
+
+```
+>>> ser.reindex(['three','four','five','one'])
+three     7.0
+four      4.0
+five      NaN
+one       2.0
+dtype: float64
+```
+
+As you can see from the value returned, the order of the labels has been completely rearranged. The value corresponding to the label two has been dropped and a new label called five is present in the series.
+
+However, to measure the reindexing process, defining the list of the labels can be awkward, especially with a large dataframe. So you could use some method that allows you to fill in or interpolate values automatically.
+
+To better understand the functioning of this mode of automatic reindexing, define the following series.
+
+```
+>>> ser3 = pd.Series([1,5,6,3],index=[0,3,5,6])
+>>> ser3
+0    1
+3    5
+5    6
+6    3
+dtype: int64
+```
+
+As you can see in this example, the index column is not a perfect sequence of numbers; in fact there are some missing values (1, 2, and 4). A common need would be to perform interpolation in order to obtain the complete sequence of numbers. To achieve this, you will use reindexing with the method option set to ffill. Moreover, you need to set a range of values for indexes. In this case, to specify a set of values between 0 and 5, you can use range(6) as an argument.
+
+```
+>>> ser3.reindex(range(6),method='ffill')
+0    1
+1    1
+2    1
+3    5
+4    5
+5    6
+dtype: int64
+```
+
+As you can see from the result, the indexes that were not present in the original series were added. By interpolation, those with the lowest index in the original series have been assigned as values. In fact, the indexes 1 and 2 have the value 1, which belongs to index 0.
+
+If you want this index value to be assigned during the interpolation, you have to use the bfill method.
+
+```
+>>> ser3.reindex(range(6),method='bfill')
+0    1
+1    5
+2    5
+3    5
+4    6
+5    6
+dtype: int64
+```
+
+In this case, the value assigned to the indexes 1 and 2 is the value 5, which belongs to index 3.
+
+Extending the concepts of reindexing with series to the dataframe, you can have a rearrangement not only for indexes (rows), but also with regard to the columns, or even both. As previously mentioned, adding a new column or index is possible, but since there are missing values in the original data structure, pandas adds NaN values to them.
+
+```
+>>> frame.reindex(range(5), method="ffill",columns=['colors','price','new','object'])
+   colors price  new     object
+0    blue   1.2  blue    ball
+1   green   1.0  green   pen
+2  yellow   3.3  yellow  pencil
+3     red   0.9  red     paper
+4   white   1.7  white   mug
+```
+
+### Dropping
+
+Another operation that is connected to Index objects is dropping. Deleting a row or a column becomes simple, due to the labels used to indicate the indexes and column names.
+
+Also in this case, pandas provides a specific function for this operation, called drop(). This method will return a new object without the items that you want to delete.
+
+For example, take the case where we want to remove a single item from a series. To do this, define a generic series of four elements with four distinct labels.
+
+```
+>>> ser = pd.Series(np.arange(4.), index=['red','blue','yellow','white'])
+>>> ser
+red       0.0
+blue      1.0
+yellow    2.0
+white     3.0
+dtype: float64
+```
+
+Now say, for example, that you want to delete the item corresponding to the label yellow. Simply specify the label as an argument of the function drop() to delete it.
+
+```
+>>> ser.drop('yellow')
+red      0.0
+blue     1.0
+white    3.0
+dtype: float64
+```
+
+To remove more items, just pass an array with the corresponding labels.
+
+```
+>>> ser.drop(['blue','white'])
+red       0.0
+yellow    2.0
+dtype: float64
+```
+
+Regarding the dataframe instead, the values can be deleted by referring to the labels of both axes. Declare the following frame by way of example.
+
+```
+>>> frame = pd.DataFrame(np.arange(16).reshape((4,4)),
+...                   index=['red','blue','yellow','white'],
+...                   columns=['ball','pen','pencil','paper'])
+>>> frame
+        ball  pen  pencil  paper
+red        0    1       2      3
+blue       4    5       6      7
+yellow     8    9      10     11
+white     12   13      14     15
+```
+
+To delete rows, you just pass the indexes of the rows.
+
+```
+>>> frame.drop(['blue','yellow'])
+       ball  pen  pencil  paper
+red       0    1       2      3
+white    12   13      14     15
+```
+
+To delete columns, you always need to specify the indexes of the columns, but you must specify the axis from which to delete the elements, and this can be done using the axis option. So to refer to the column names, you should specify axis = 1.
+
+```
+>>> frame.drop(['pen','pencil'],axis=1)
+        ball  paper
+red        0      3
+blue       4      7
+yellow     8     11
+white     12     15
+```
+
+### Arithmetic and Data Alignment
+
+Perhaps the most powerful feature involving the indexes in a data structure, is that pandas can align indexes coming from two different data structures. This is especially true when you are performing an arithmetic operation on them. In fact, during these operations, not only can the indexes between the two structures be in a different order, but they also can be present in only one of the two structures.
+
+As you can see from the examples that follow, pandas proves to be very powerful in aligning indexes during these operations. For example, you can start considering two series in which they are defined, respectively, two arrays of labels not perfectly matching each other.
+
+```
+>>> s1 = pd.Series([3,2,5,1],['white','yellow','green','blue'])
+>>> s2 = pd.Series([1,4,7,2,1],['white','yellow','black','blue','brown'])
+```
+
+Now among the various arithmetic operations, consider the simple sum. As you can see from the two series just declared, some labels are present in both, while other labels are present only in one of the two. When the labels are present in both operators, their values will be added, while in the opposite case, they will also be shown in the result (new series), but with the value NaN.
+
+```
+>>> s1 + s2
+black    NaN
+blue     3.0
+brown    NaN
+green    NaN
+white    4.0
+yellow   6.0
+dtype: float64
+```
+
+In the case of the dataframe, although it may appear more complex, the alignment follows the same principle, but is carried out both for the rows and for the columns.
+
+```
+>>> frame1 = pd.DataFrame(np.arange(16).reshape((4,4)),
+...                   index=['red','blue','yellow','white'],
+...                   columns=['ball','pen','pencil','paper'])
+>>> frame2 = pd.DataFrame(np.arange(12).reshape((4,3)),
+...                   index=['blue','green','white','yellow'],
+...                   columns=['mug','pen','ball'])
+>>> frame1
+        ball  pen  pencil  paper
+red        0    1       2      3
+blue       4    5       6      7
+yellow     8    9      10     11
+white     12   13      14     15
+>>> frame2
+        mug  pen  ball
+blue      0    1     2
+green     3    4     5
+white     6    7     8
+yellow    9   10    11
+>>> frame1 + frame2
+        ball  mug  paper  pen  pencil
+blue     6.0  NaN    NaN  6.0     NaN
+green    NaN  NaN    NaN  NaN     NaN
+red      NaN  NaN    NaN  NaN     NaN
+white    20.0 NaN    NaN  20.0    NaN
+yellow   19.0 NaN    NaN  19.0    NaN
+```
