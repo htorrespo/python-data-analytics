@@ -1158,3 +1158,91 @@ red      NaN  NaN    NaN  NaN     NaN
 white    20.0 NaN    NaN  20.0    NaN
 yellow   19.0 NaN    NaN  19.0    NaN
 ```
+
+## Operations Between Data Structures
+Now that you are familiar with the data structures such as series and dataframe and you have seen how various elementary operations can be performed on them, it’s time to go to operations involving two or more of these structures.
+
+For example, in the previous section, you saw how the arithmetic operators apply between two of these objects. Now in this section you will deepen more the topic of operations that can be performed between two data structures.
+
+### Flexible Arithmetic Methods
+
+You’ve just seen how to use mathematical operators directly on the pandas data structures. The same operations can also be performed using appropriate methods, called flexible arithmetic methods.
+
+= add()
+
+- sub()
+
+- div()
+
+- mul()
+
+
+In order to call these functions, you need to use a specification different than what you’re used to dealing with mathematical operators. For example, instead of writing a sum between two dataframes, such as frame1 + frame2, you have to use the following format:
+
+```
+>>> frame1.add(frame2)
+         ball  mug  paper   pen  pencil
+blue      6.0  NaN    NaN   6.0     NaN
+green     NaN  NaN    NaN   NaN     NaN
+red       NaN  NaN    NaN   NaN    NaN
+white    20.0  NaN    NaN  20.0    NaN
+yellow   19.0  NaN    NaN  19.0    NaN
+```
+
+As you can see, the results are the same as what you’d get using the addition operator +. You can also note that if the indexes and column names differ greatly from one series to another, you’ll find yourself with a new dataframe full of NaN values. You’ll see later in this chapter how to handle this kind of data.
+
+### Operations Between DataFrame and Series
+
+Coming back to the arithmetic operators, pandas allows you to make transactions between different structures. For example, between a dataframe and a series. For example, you can define these two structures in the following way.
+
+```
+>>> frame = pd.DataFrame(np.arange(16).reshape((4,4)),
+...                   index=['red','blue','yellow','white'],
+...                   columns=['ball','pen','pencil','paper'])
+>>> frame
+        ball  pen  pencil  paper
+red        0    1       2      3
+blue       4    5       6      7
+yellow     8    9      10     11
+white     12   13      14     15
+>>> ser = pd.Series(np.arange(4), index=['ball','pen','pencil','paper'])
+>>> ser
+ball      0
+pen       1
+pencil    2
+paper     3
+dtype: int64
+```
+
+The two newly defined data structures have been created specifically so that the indexes of series match the names of the columns of the dataframe. This way, you can apply a direct operation.
+
+```
+>>> frame - ser
+        ball  pen  pencil  paper
+red        0    0       0      0
+blue       4    4       4      4
+yellow     8    8       8      8
+white     12   12      12     12
+```
+
+As you can see, the elements of the series are subtracted from the values of the dataframe corresponding to the same index on the column. The value is subtracted for all values of the column, regardless of their index.
+
+If an index is not present in one of the two data structures, the result will be a new column with that index only that all its elements will be NaN.
+
+```
+>>> ser['mug'] = 9
+>>> ser
+ball      0
+pen       1
+pencil    2
+paper     3
+mug       9
+dtype: int64
+>>> frame - ser
+        ball  mug  paper  pen  pencil
+red        0  NaN      0    0       0
+blue       4  NaN      4    4       4
+yellow     8  NaN      8    8       8
+white     12  NaN     12   12      12
+```
+
