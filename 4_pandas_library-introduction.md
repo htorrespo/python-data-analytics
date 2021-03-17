@@ -1364,3 +1364,206 @@ min     0.000000   1.000000   2.000000   3.000000
 max    12.000000  13.000000  14.000000  15.000000
 ```
 
+## Sorting and Ranking
+
+Another fundamental operation that uses indexing is sorting. Sorting the data is often a necessity and it is very important to be able to do it easily. pandas provides the sort_index() function, which returns a new object that’s identical to the start, but in which the elements are ordered.
+
+Let’s start by seeing how you can sort items in a series. The operation is quite trivial since the list of indexes to be ordered is only one.
+
+```
+>>> ser = pd.Series([5,0,3,8,4],
+...     index=['red','blue','yellow','white','green'])
+>>> ser
+red       5
+blue      0
+yellow    3
+white     8
+green     4
+dtype: int64
+>>> ser.sort_index()
+blue      0
+green     4
+red       5
+white     8
+yellow    3
+dtype: int64
+```
+
+As you can see, the items were sorted in ascending alphabetical order based on their labels (from A to Z). This is the default behavior, but you can set the opposite order by setting the ascending option to False.
+
+```
+>>> ser.sort_index(ascending=False)
+yellow    3
+white     8
+red       5
+green     4
+blue      0
+dtype: int64
+```
+
+With the dataframe, the sorting can be performed independently on each of its two axes. So if you want to order by row following the indexes, you just continue to use the sort_index() function without arguments as you’ve seen before, or if you prefer to order by columns, you need to set the axis options to 1.
+
+```
+>>> frame = pd.DataFrame(np.arange(16).reshape((4,4)),
+...                   index=['red','blue','yellow','white'],
+...                   columns=['ball','pen','pencil','paper'])
+>>> frame
+        ball  pen  pencil  paper
+red        0    1       2      3
+blue       4    5       6      7
+yellow     8    9      10     11
+white     12   13      14     15
+>>> frame.sort_index()
+        ball  pen  pencil  paper
+blue       4    5       6      7
+red        0    1       2      3
+white     12   13      14     15
+yellow     8    9      10     11
+>>> frame.sort_index(axis=1)
+        ball  paper  pen  pencil
+red        0      3    1       2
+blue       4      7    5       6
+yellow     8     11    9      10
+white     12     15   13      14
+```
+
+So far, you have learned how to sort the values according to the indexes. But very often you may need to sort the values contained in the data structure. In this case, you have to differentiate depending on whether you have to sort the values of a series or a dataframe.
+
+If you want to order the series, you need to use the sort_values() function .
+
+```
+>>> ser.sort_values()
+blue      0
+yellow    3
+green     4
+red       5
+white     8
+dtype: int64
+```
+
+If you need to order the values in a dataframe, use the sort_values() function seen previously but with the by option. Then you have to specify the name of the column on which to sort.
+
+```
+>>> frame.sort_values(by='pen')
+        ball  pen  pencil  paper
+red        0    1       2      3
+blue       4    5       6      7
+yellow     8    9      10     11
+white     12   13      14     15
+```
+
+If the sorting criteria will be based on two or more columns, you can assign an array containing the names of the columns to the by option.
+
+```
+>>> frame.sort_values(by=['pen','pencil'])
+        ball  pen  pencil  paper
+red        0    1       2      3
+blue       4    5       6      7
+yellow     8    9      10     11
+white     12   13      14     15
+```
+
+The ranking is an operation closely related to sorting. It mainly consists of assigning a rank (that is, a value that starts at 0 and then increase gradually) to each element of the series. The rank will be assigned starting from the lowest value to the highest.
+
+```
+>>> ser.rank()
+red       4.0
+blue      1.0
+yellow    2.0
+white     5.0
+green     3.0
+dtype: float64
+```
+
+The rank can also be assigned in the order in which the data are already in the data structure (without a sorting operation). In this case, you just add the method option with the first value assigned.
+
+```
+>>> ser.rank(method='first')
+red       4.0
+blue      1.0
+yellow    2.0
+white     5.0
+green     3.0
+dtype: float64
+```
+
+By default, even the ranking follows an ascending sort. To reverse this criteria, set the ascending option to False.
+
+```
+>>> ser.rank(ascending=False)
+red       2.0
+blue      5.0
+yellow    4.0
+white     1.0
+green     3.0
+dtype: float64
+```
+
+## Correlation and Covariance
+
+Two important statistical calculations are correlation and covariance, expressed in pandas by the corr() and cov() functions. These kind of calculations normally involve two series.
+
+```
+>>> seq2 = pd.Series([3,4,3,4,5,4,3,2],['2006','2007','2008',
+'2009','2010','2011','2012','2013'])
+>>> seq = pd.Series([1,2,3,4,4,3,2,1],['2006','2007','2008',
+'2009','2010','2011','2012','2013'])
+>>> seq.corr(seq2)
+0.7745966692414835
+>>> seq.cov(seq2)
+0.8571428571428571
+```
+Covariance and correlation can also be applied to a single dataframe. In this case, they return their corresponding matrices in the form of two new dataframe objects.
+
+```
+>>> frame2 = pd.DataFrame([[1,4,3,6],[4,5,6,1],[3,3,1,5],[4,1,6,4]],
+...                     index=['red','blue','yellow','white'],
+...                     columns=['ball','pen','pencil','paper'])
+>>> frame2
+        ball  pen  pencil  paper
+red        1    4       3      6
+blue       4    5       6      1
+yellow     3    3       1      5
+white      4    1       6      4
+>>> frame2.corr()
+            ball       pen    pencil     paper
+ball    1.000000 -0.276026  0.577350 -0.763763
+pen    -0.276026  1.000000 -0.079682 -0.361403
+pencil  0.577350 -0.079682  1.000000 -0.692935
+paper  -0.763763 -0.361403 -0.692935  1.000000
+>>> frame2.cov()
+            ball       pen    pencil     paper
+ball    2.000000 -0.666667  2.000000 -2.333333
+pen    -0.666667  2.916667 -0.333333 -1.333333
+pencil  2.000000 -0.333333  6.000000 -3.666667
+paper  -2.333333 -1.333333 -3.666667  4.666667
+```
+
+Using the corrwith() method, you can calculate the pairwise correlations between the columns or rows of a dataframe with a series or another DataFrame().
+
+```
+>>> ser = pd.Series([0,1,2,3,9],
+...                   index=['red','blue','yellow','white','green'])
+>>> ser
+red       0
+blue      1
+yellow    2
+white     3
+green     9
+dtype: int64
+>>> frame2.corrwith(ser)
+ball      0.730297
+pen      -0.831522
+pencil    0.210819
+paper    -0.119523
+dtype: float64
+>>> frame2.corrwith(frame)
+ball      0.730297
+pen      -0.831522
+pencil    0.210819
+paper    -0.119523
+dtype: float64
+```
+
+
+
