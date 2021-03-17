@@ -1265,6 +1265,8 @@ red        0    1       2      3
 blue       4    5       6      7
 yellow     8    9      10     11
 white     12   13      14     15
+```
+
 For example, you could calculate the square root of each value in the dataframe using the NumPy np.sqrt().
 
 ```
@@ -1321,6 +1323,7 @@ It is not mandatory that the method apply() return a scalar value. It can also r
 ...     return pd.Series([x.min(), x.max()], index=['min','max'])
 ...
 ```
+
 Then, you apply the function as before. But in this case as an object returned you get a dataframe instead of a series, in which there will be as many rows as the values returned by the function.
 
 ```
